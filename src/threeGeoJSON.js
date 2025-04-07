@@ -4,10 +4,8 @@ import { LineGeometry } from "jsm/lines/LineGeometry.js";
 import { Line2 } from "jsm/lines/Line2.js";
 
 /* Draw GeoJSON
-
 Iterates through the latitude and longitude values, converts the values to XYZ coordinates,
 and draws the geoJSON geometries.
-
 */
 
 export function drawThreeGeo({ json, radius, materalOptions }) {
@@ -218,7 +216,6 @@ export function drawThreeGeo({ json, radius, materalOptions }) {
     const lineMaterial = new LineMaterial({
       color,
       linewidth: 2.5,
-      fog: true
     });
 
     const line = new Line2(lineGeo, lineMaterial);

@@ -6,7 +6,6 @@ import { drawThreeGeo } from "./src/threeGeoJSON.js";
 const w = window.innerWidth;
 const h = window.innerHeight;
 const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x000000, 0.25);
 const camera = new THREE.PerspectiveCamera(75, w / h, 1, 1000);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -18,8 +17,8 @@ controls.enableDamping = true;
 controls.target.set(0, 0, 0); // what the camera should orbit around
 camera.position.set(0, 2.5, 3); // view angle you want
 controls.update();
-controls.minDistance = 3;
-controls.maxDistance = 4;
+controls.minDistance = 3.2;
+controls.maxDistance = 5;
 
 const geometry = new THREE.SphereGeometry(2);
 
@@ -41,7 +40,7 @@ scene.add(line);
 // https://github.com/martynafford/natural-earth-geojson
 // non-geojson datasets: https://www.naturalearthdata.com/downloads/
 
-fetch('./geojson/ne_110m_land.json')
+fetch('./geojson/ne_110m_admin_0_countries.json')
   .then(response => response.text())
   .then(text => {
     const data = JSON.parse(text);
@@ -56,7 +55,7 @@ fetch('./geojson/ne_110m_land.json')
   });
 
   let stars = null;
-  stars = getStarfield({ numStars: 1500, fog: false });
+  stars = getStarfield({ numStars: 1500});
   scene.add(stars);
 
 function animate() {

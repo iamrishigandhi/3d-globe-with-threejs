@@ -50,8 +50,6 @@ Credit - Watch the tutorial on [YouTube](https://youtu.be/f4zncVufL_I)
 
    Navigate to `http://localhost:8080` to view the globe visualization.
 
-
-
 ## Data Sources
 
 - **GeoJSON Data**: Country outlines are sourced from [Natural Earth GeoJSON](https://github.com/martynafford/natural-earth-geojson).

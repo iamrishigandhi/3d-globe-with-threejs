@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from 'jsm/controls/OrbitControls.js';
 import getStarfield from "./src/getStarfield.js";
 import { drawThreeGeo } from "./src/threeGeoJSON.js";
+import countryLabels from "./src/countryLabels.js";
 
 const w = window.innerWidth;
 const h = window.innerHeight;
@@ -9,6 +10,7 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, w / h, 1, 1000);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(w, h);
 document.body.appendChild(renderer.domElement);
 
@@ -19,7 +21,6 @@ camera.position.set(0, 2.5, 3); // view angle you want
 controls.update();
 controls.minDistance = 3.2;
 controls.maxDistance = 5;
-
 const geometry = new THREE.SphereGeometry(2);
 
 // solid colored sphere
@@ -52,7 +53,9 @@ fetch('./geojson/ne_110m_admin_0_countries.json')
       },
     });
     scene.add(countries);
-  });
+    countryLabels(scene, data);
+  })
+  .catch(error => console.error('Error loading GeoJSON:', error));;
 
   let stars = null;
   stars = getStarfield({ numStars: 1500});

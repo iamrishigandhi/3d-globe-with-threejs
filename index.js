@@ -6,32 +6,41 @@ import { drawThreeGeo } from "./src/threeGeoJSON.js";
 const w = window.innerWidth;
 const h = window.innerHeight;
 const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x000000, 0.3);
-const camera = new THREE.PerspectiveCamera(75, w / h, 1, 100);
-camera.position.z = 5;
+scene.fog = new THREE.FogExp2(0x000000, 0.25);
+const camera = new THREE.PerspectiveCamera(75, w / h, 1, 1000);
+
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(w, h);
 document.body.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
+controls.target.set(0, 0, 0); // what the camera should orbit around
+camera.position.set(0, 2.5, 3); // view angle you want
+controls.update();
+controls.minDistance = 3;
+controls.maxDistance = 4;
 
 const geometry = new THREE.SphereGeometry(2);
-const lineMat = new THREE.LineBasicMaterial({ 
+
+// solid colored sphere
+const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0x3498db });
+const sphereMesh = new THREE.Mesh(geometry, sphereMaterial);
+scene.add(sphereMesh);
+
+let lineMat = new THREE.LineBasicMaterial({ 
   color: 0xffffff,
   transparent: true,
-  opacity: 0.4, 
+  opacity: 0.5, 
 });
 const edges = new THREE.EdgesGeometry(geometry, 1);
 const line = new THREE.LineSegments(edges, lineMat);
 scene.add(line);
 
-const stars = getStarfield({ numStars: 1000, fog: false });
-scene.add(stars);
-
 // check here for more datasets ...
 // https://github.com/martynafford/natural-earth-geojson
 // non-geojson datasets: https://www.naturalearthdata.com/downloads/
+
 fetch('./geojson/ne_110m_land.json')
   .then(response => response.text())
   .then(text => {
@@ -40,11 +49,15 @@ fetch('./geojson/ne_110m_land.json')
       json: data,
       radius: 2,
       materialOptions: {
-        color: 0x80FF80,
+        color: 0x00ff00,
       },
     });
     scene.add(countries);
   });
+
+  let stars = null;
+  stars = getStarfield({ numStars: 1500, fog: false });
+  scene.add(stars);
 
 function animate() {
   requestAnimationFrame(animate);

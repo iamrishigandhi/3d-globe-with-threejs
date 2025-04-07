@@ -8,14 +8,14 @@ This repository contains a simple Three.js application that renders a 3D globe. 
 - **Country Outlines**: Visualizes feature borders using GeoJSON data.
 - **Starfield Background**: Enhances the visual experience with a starfield effect.
 
-Watch the tutorial on [YouTube](https://youtu.be/f4zncVufL_I)
+Credit - Watch the tutorial on [YouTube](https://youtu.be/f4zncVufL_I)
 
 ### Installation
 
 1. **Clone the repository**
 
    ```bash
-   git clone ttps://github.com/bobbyroe/3d-globe-with-threejs.git
+   git clone https://github.com/iamrishigandhi/3d-globe-with-threejs.git
    ```
 
 2. **Navigate to the project directory**

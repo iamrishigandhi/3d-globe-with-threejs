@@ -12,23 +12,34 @@ const z = radius * Math.sin(phi) * Math.sin(theta);
 return new THREE.Vector3(x, y, z);
 }
 
+function getCentroid(ring) {
+    let totalLat = 0;
+    let totalLon = 0;
+    let count = 0;
+
+    ring.forEach(([lon, lat]) => {
+    totalLat += lat;
+    totalLon += lon;
+    count++;
+    });
+
+    return [totalLat / count, totalLon / count];
+}
+
 function makeTextSprite(message, parameters = {}) {
     const fontface = parameters.fontface || "Arial";
-    const fontsize = parameters.fontsize || 96;  // Use a smaller base fontsize
+    const fontsize = parameters.fontsize || 128;
     const borderThickness = parameters.borderThickness || 4;
 
     const canvas = document.createElement("canvas");
     const context = canvas.getContext("2d");
 
-    // Calculate text width and height
     context.font = `${fontsize}px ${fontface}`;
     const textWidth = context.measureText(message).width;
 
-    // Adjust canvas size based on text and border thickness
     canvas.width = textWidth + borderThickness * 2;
     canvas.height = fontsize + borderThickness * 2;
 
-    // Clear canvas and draw text
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.fillStyle = "rgba(0, 0, 0, 1.0)";
     context.fillText(message, borderThickness, fontsize);
@@ -40,31 +51,36 @@ function makeTextSprite(message, parameters = {}) {
     const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
     const sprite = new THREE.Sprite(material);
 
-    // Adjust scale based on globe radius (set sprite size proportional to the globe size)
-    const scaleFactor = 1;  // Scale factor to adjust size
-    sprite.scale.set(scaleFactor, scaleFactor, 1); // Keep aspect ratio
+    const scaleFactor = 1;
+    sprite.scale.set(scaleFactor, scaleFactor * (canvas.height / canvas.width), 1);
 
     return sprite;
 }
 
-// Main function to add labels from geojson
 export default function countryLabels(scene, geojson, radius = 2.05) {
-geojson.features.forEach(feature => {
+    geojson.features.forEach(feature => {
     const name = feature.properties.ADMIN || feature.properties.name;
-    const coords = feature.geometry;
+    const geometry = feature.geometry;
 
-    let lat, lon;
-    if (coords.type === "Polygon") {
-    [lon, lat] = coords.coordinates[0][0];
-    } else if (coords.type === "MultiPolygon") {
-    [lon, lat] = coords.coordinates[0][0][0];
+    let centroidLat, centroidLon;
+
+    if (geometry.type === "Polygon") {
+        const outerRing = geometry.coordinates[0];
+        [centroidLat, centroidLon] = getCentroid(outerRing);
+    } else if (geometry.type === "MultiPolygon") {
+        // Use largest polygon's outer ring
+        const largest = geometry.coordinates.reduce((a, b) =>
+        a[0].length > b[0].length ? a : b
+        );
+        const outerRing = largest[0];
+        [centroidLat, centroidLon] = getCentroid(outerRing);
     } else {
-    return;
+        return; // unsupported geometry
     }
 
-    const position = latLonToVector3(lat, lon, radius);
+    const position = latLonToVector3(centroidLat, centroidLon, radius);
     const label = makeTextSprite(name, { fontsize: 48 });
     label.position.copy(position);
     scene.add(label);
-});
+    });
 }
